@@ -9,28 +9,11 @@
     .controller('SidebarCtrl', SidebarCtrl);
 
   /** @ngInject */
-  function SidebarCtrl($scope, $rootScope, $timeout, $location, layoutSizes, sidebarService, $element) {
+  function SidebarCtrl($scope, $timeout, $state, layoutSizes, sidebarService, $element) {
 
     $scope.menuItems = sidebarService.getMenuItems();
     $scope.menuHeight = $element[0].childNodes[0].clientHeight - 84;
-
-    function selectMenuItem() {
-      $.each($scope.menuItems, function (index, menu) {
-        menu.selected = ('#' + $location.$$url).indexOf(menu.root) == 0;
-        menu.expanded = menu.expanded || menu.selected;
-        if (menu.subMenu) {
-          $.each(menu.subMenu, function (subIndex, subMenu) {
-            subMenu.selected = (('#' + $location.$$url).indexOf(subMenu.root) == 0) && !subMenu.disabled;
-          });
-        }
-      });
-    }
-
-    selectMenuItem();
-
-    $scope.$on('$locationChangeSuccess', function () {
-      selectMenuItem();
-    });
+    $scope.defaultSidebarState = $scope.menuItems[0].stateRef;
 
     $scope.menuExpand = function () {
       $scope.$isMenuCollapsed = false;
@@ -60,23 +43,6 @@
       $scope.isMenuShouldCollapsed = isMenuShouldCollapsed;
 
     });
-
-    $scope.toggleSubMenu = function ($event, item) {
-      var submenu = $($event.currentTarget).next();
-      if ($scope.$isMenuCollapsed) {
-        $scope.menuExpand();
-        if (!item.expanded) {
-          $timeout(function () {
-            item.expanded = !item.expanded;
-            submenu.slideToggle();
-          });
-        }
-      } else {
-        item.expanded = !item.expanded;
-        submenu.slideToggle();
-      }
-
-    };
 
     window.onclick = function () {
       $timeout(function () {

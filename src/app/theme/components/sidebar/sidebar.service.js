@@ -6,6 +6,9 @@
 
   /** @ngInject */
   function sidebarService($state) {
+
+    var isMenuCollapsed = true;
+
     var staticMenuItems = [ {
         title: 'Pages',
         icon: 'ion-document',
@@ -58,6 +61,18 @@
       return menuItems.concat(staticMenuItems);
     };
 
+    this.setMenuCollapsed = function(isCollapsed) {
+      isMenuCollapsed = isCollapsed;
+    };
+
+    this.isMenuCollapsed = function() {
+      return isMenuCollapsed;
+    };
+
+    this.toggleMenuCollapsed = function() {
+      isMenuCollapsed = !isMenuCollapsed;
+    };
+
     function defineMenuItemStates() {
       return $state.get()
           .filter(function(s) {
@@ -71,7 +86,7 @@
               level: (s.name.match(/\./g) || []).length,
               order: meta.order,
               icon: meta.icon,
-              root: '#/' + s.name.replace('.', '/'),
+              stateRef: s.name,
             };
           })
           .sort(function(a, b) {
